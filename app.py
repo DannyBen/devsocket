@@ -1,39 +1,40 @@
 import asyncio
 from typing import Dict, Set
 from aiohttp import web, WSMsgType
+import pathlib
 
 # channel -> set of WebSocketResponse
 subscribers: Dict[str, Set[web.WebSocketResponse]] = {}
 lock = asyncio.Lock()
 
-async def broadcast(channel: str, payload):
+
+async def remove_dead_connections(dead: list):
     async with lock:
-        conns = list(subscribers.get(channel, set()))
-    if not conns:
+        for ws in dead:
+            for channel, connections in list(subscribers.items()):
+                if ws in connections:
+                    connections.discard(ws)
+                    if not connections:
+                        subscribers.pop(channel, None)
+
+
+async def broadcast(channel: str, message):
+    async with lock:
+        connections = list(subscribers.get(channel, set()))
+    if not connections:
         return 0
 
     dead = []
-    sent = 0
-    for ws in conns:
+    for ws in connections:
         try:
-            # Send text; if dict/list, aiohttp will json-dump for send_json
-            if isinstance(payload, (dict, list)):
-                await ws.send_json({"channel": channel, "data": payload})
-            else:
-                await ws.send_str(payload if isinstance(payload, str) else str(payload))
-            sent += 1
+            await ws.send_json(message)
         except Exception:
             dead.append(ws)
 
     if dead:
-        async with lock:
-            for ws in dead:
-                for ch, set_ in list(subscribers.items()):
-                    if ws in set_:
-                        set_.discard(ws)
-                        if not set_:
-                            subscribers.pop(ch, None)
-    return sent
+        await remove_dead_connections(dead)
+    return len(connections) - len(dead)
+
 
 async def ws_handler(request: web.Request):
     channel = request.match_info["channel"]
@@ -44,7 +45,6 @@ async def ws_handler(request: web.Request):
 
     try:
         async for msg in ws:
-            # We don't expect client→server messages; just ignore pings/text.
             if msg.type in (WSMsgType.ERROR, WSMsgType.CLOSE):
                 break
     finally:
@@ -55,26 +55,33 @@ async def ws_handler(request: web.Request):
                     subscribers.pop(channel, None)
     return ws
 
+
 async def publish_handler(request: web.Request):
     channel = request.match_info["channel"]
     ctype = request.headers.get("content-type", "")
-    if ctype.startswith("application/json"):
+    if ctype and ctype.startswith("application/json"):
         data = await request.json()
-        payload = {"channel": channel, "data": data}
-        delivered = await broadcast(channel, payload)  # send unified json envelope
     else:
-        text = (await request.read()).decode("utf-8", errors="replace")
-        payload = {"channel": channel, "data": text}
-        delivered = await broadcast(channel, payload)
+        data = (await request.read()).decode("utf-8", errors="replace")
+    message = {"channel": channel, "data": data}
+    delivered = await broadcast(channel, message)
     return web.json_response({"ok": True, "delivered": delivered})
+
 
 def create_app():
     app = web.Application()
     app.add_routes([
         web.get("/ws/{channel}", ws_handler),
         web.post("/publish/{channel}", publish_handler),
+        web.get("/", lambda request: web.FileResponse("demo.html")),
     ])
+
     return app
 
-if __name__ == "__main__":
+
+def main():
     web.run_app(create_app(), host="0.0.0.0", port=3000)
+
+
+if __name__ == "__main__":
+    main()

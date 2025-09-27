@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>HTTP → WebSocket Demo</title>
+    <style>
+      body { font-family: sans-serif; margin: 2em; }
+      input, button { padding: 6px 10px; margin: 0.2em; }
+      #log { border: 1px solid #ccc; padding: 8px; height: 200px; overflow: auto; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>HTTP → WS Demo</h1>
+
+    <div>
+      Channel: <input id="channel" value="test" />
+      <button id="connect">Connect</button>
+      <span id="status">disconnected</span>
+    </div>
+
+    <div>
+      <input id="plainText" value="hello world" />
+      <button id="sendPlain">Send plain</button>
+    </div>
+
+    <div>
+      <input id="jsonText" value='{"msg":"hi","n":1}' />
+      <button id="sendJson">Send JSON</button>
+    </div>
+
+    <h3>Messages</h3>
+    <div id="log"></div>
+
+    <script>
+      let ws = null;
+      const $ = id => document.getElementById(id);
+      const log = (msg) => {
+        $("log").textContent += msg + "\n";
+        $("log").scrollTop = $("log").scrollHeight;
+      };
+
+      $("connect").onclick = () => {
+        const ch = $("channel").value;
+        if (ws) ws.close();
+        ws = new WebSocket(`ws://${location.host}/ws/${ch}`);
+        ws.onopen = () => $("status").textContent = "connected";
+        ws.onclose = () => $("status").textContent = "disconnected";
+        ws.onmessage = (e) => log("← " + e.data);
+      };
+
+      $("sendPlain").onclick = async () => {
+        const ch = $("channel").value;
+        const txt = $("plainText").value;
+        await fetch(`/publish/${ch}`, {method:"POST", body: txt});
+        log("→ plain: " + txt);
+      };
+
+      $("sendJson").onclick = async () => {
+        const ch = $("channel").value;
+        const js = $("jsonText").value;
+        await fetch(`/publish/${ch}`, {
+          method:"POST",
+          headers: {"Content-Type":"application/json"},
+          body: js
+        });
+        log("→ json: " + js);
+      };
+    </script>
+  </body>
+</html>
