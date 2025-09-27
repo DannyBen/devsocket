@@ -1,0 +1,5 @@
+services:
+  http-to-websocket:
+    image: dannyben/http-to-websocket
+    build: .
+    ports: ["3000:3000"]
