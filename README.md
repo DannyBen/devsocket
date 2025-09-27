@@ -70,9 +70,30 @@ Open the demo UI: [http://localhost:3000](http://localhost:3000)
 
 ## Run (Docker)
 
+You can run the pre-built Docker image directly from Docker Hub:
+
 ```bash
-docker build -t http-to-websocket .
-docker run --rm -p 3000:3000 http-to-websocket
+docker run --rm -p 3000:3000 dannyben/http-to-websocket
+```
+
+Open [http://localhost:3000](http://localhost:3000) to use the demo page.
+
+### Run with Docker Compose
+
+Here’s a minimal `docker-compose.yml`:
+
+```yaml
+services:
+  http-to-websocket:
+    image: dannyben/http-to-websocket
+    ports:
+      - "3000:3000"
+```
+
+Run it with:
+
+```bash
+docker compose up
 ```
 
 ---
