@@ -1,4 +1,4 @@
-# DevSocket
+# DevSocket - HTTP → WebSocket Server for Development
 
 A minimal bridge that lets you **publish messages over HTTP** and **consume them over WebSockets**.
 
