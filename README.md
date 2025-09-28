@@ -70,7 +70,8 @@ Open the demo UI: [http://localhost:3000](http://localhost:3000)
 
 ## Run (Docker)
 
-You can run the pre-built Docker image directly from Docker Hub:
+You can run the [pre-built Docker image](https://hub.docker.com/r/dannyben/devsocket)
+directly from Docker Hub:
 
 ```bash
 docker run --rm -p 3000:3000 dannyben/devsocket
