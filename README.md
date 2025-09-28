@@ -56,8 +56,8 @@ Response:
 ## Run (Python)
 
 ```bash
-git clone https://github.com/you/http-to-websocket.git
-cd http-to-websocket
+git clone https://github.com/dannyben/devsocket.git
+cd devsocket
 python -m pip install -r requirements.txt
 python app.py
 ```
@@ -73,7 +73,7 @@ Open the demo UI: [http://localhost:3000](http://localhost:3000)
 You can run the pre-built Docker image directly from Docker Hub:
 
 ```bash
-docker run --rm -p 3000:3000 dannyben/http-to-websocket
+docker run --rm -p 3000:3000 dannyben/devsocket
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to use the demo page.
@@ -84,8 +84,8 @@ Here’s a minimal `docker-compose.yml`:
 
 ```yaml
 services:
-  http-to-websocket:
-    image: dannyben/http-to-websocket
+  devsocket:
+    image: dannyben/devsocket
     ports:
       - "3000:3000"
 ```
