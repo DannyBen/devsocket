@@ -1,4 +1,4 @@
-# http-to-websocket
+# DevSocket
 
 A minimal bridge that lets you **publish messages over HTTP** and **consume them over WebSockets**.
 

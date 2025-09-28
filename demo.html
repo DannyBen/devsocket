@@ -2,31 +2,35 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title>HTTP → WebSocket Demo</title>
+    <title>DevSocket HTTP → WebSocket Demo</title>
     <style>
-      body { font-family: sans-serif; margin: 2em; }
+      body { max-width: 600px ;font-family: system-ui, sans-serif; margin: 2em auto; }
       input, button { padding: 6px 10px; margin: 0.2em; }
+      button { font-weight: bold; }
       #log { border: 1px solid #ccc; padding: 8px; height: 200px; overflow: auto; white-space: pre-wrap; }
     </style>
   </head>
   <body>
-    <h1>HTTP → WS Demo</h1>
+    <h1>DevSocket HTTP → WebSocket Demo</h1>
 
-    <div>
-      Channel: <input id="channel" value="test" />
-      <button id="connect">Connect</button>
-      <span id="status">disconnected</span>
-    </div>
-
-    <div>
-      <input id="plainText" value="hello world" />
-      <button id="sendPlain">Send plain</button>
-    </div>
-
-    <div>
-      <input id="jsonText" value='{"msg":"hi","n":1}' />
-      <button id="sendJson">Send JSON</button>
-    </div>
+    <table>
+      <tr>
+        <td>Channel:</td>
+        <td><input id="channel" value="test" /></td>
+        <td><button id="connect">Connect</button></td>
+        <td><span id="status">disconnected</span></td>
+      </tr>
+      <tr>
+        <td>Message:</td>
+        <td><input id="plainText" value="hello world" /></td>
+        <td colspan="2"><button id="sendPlain">Send plain</button></td>
+      </tr>
+      <tr>
+        <td>Message:</td>
+        <td><input id="jsonText" value='{"msg":"hi","n":1}' /></td>
+        <td colspan="2"><button id="sendJson">Send JSON</button></td>
+      </tr>
+    </table>
 
     <h3>Messages</h3>
     <div id="log"></div>

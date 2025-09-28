@@ -1,6 +1,6 @@
 services:
-  http-to-websocket:
-    image: dannyben/http-to-websocket
-    container_name: http-to-websocket
+  devsocket:
+    image: dannyben/devsocket
+    container_name: devsocket
     build: .
     ports: ["3000:3000"]
